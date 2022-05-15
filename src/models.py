@@ -90,6 +90,7 @@ class GATv3Layer(tgnn.MessagePassing):
         nn.init.xavier_uniform_(self.beta.data, gain=1.414)
         
     def forward(self, x, edge_attr, edge_idx):
+        edge_idx, edge_attr = tg.utils.add_self_loops(edge_idx, edge_attr)
         return self.propagate(edge_idx, x=x, edge_attr=edge_attr)
 
     def message(self, x_i, x_j, edge_attr):
@@ -119,17 +120,19 @@ class GATv3(nn.Module):
 
         return out
 
-# graph = Graph.Erdos_Renyi(n=15, p=0.2, directed=False, loops=False)
-# adj = torch.from_numpy(np.array(list(graph.get_adjacency())))
-# edge_idx, _ = tg.utils.dense_to_sparse(adj)
-# n_edges = graph.ecount()
-# edge_attr = torch.rand(n_edges, 64)
-# x = torch.rand(15, 128)
-# y = torch.rand(size=(15, 1))
-# y[y > 0.5] = 1
-# y[y <= 0.5] = 0
+graph = Graph.Erdos_Renyi(n=15, p=0.2, directed=False, loops=False)
+adj = torch.from_numpy(np.array(list(graph.get_adjacency())))
+edge_idx, _ = tg.utils.dense_to_sparse(adj)
+n_edges = graph.ecount()
+edge_attr = torch.rand(n_edges, 64)
+x = torch.rand(15, 128)
+y = torch.rand(size=(15, 1))
+y[y > 0.5] = 1
+y[y <= 0.5] = 0
 
-# gat = GATv3(128, 8, 32, 10, 4)
+gat = GATv3(128, 8, 32, 10, 4)
+pred = gat(x, edge_idx, edge_attr)
+print (pred.shape)
 # criterion = nn.CrossEntropyLoss()
 # optim = torch.optim.Adam(gat.parameters())
 
