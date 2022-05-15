@@ -68,7 +68,7 @@ class GATv3Layer(tgnn.MessagePassing):
     def __init__(self, indim, eigendim, outdim):
         super().__init__(aggr="add")
         self.original_mlp = nn.Sequential(
-                nn.Linear(2 * indim, outdim), # account for extra Wx_i || W_j from GATv1
+                nn.Linear(2 * indim, outdim), # account for extra Wx_i || Wx_j from GATv1
                 nn.Linear(outdim, outdim),
                 nn.LeakyReLU(0.02),
                 nn.Linear(outdim, outdim)
