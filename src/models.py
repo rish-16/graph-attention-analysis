@@ -89,8 +89,6 @@ class GATv3Layer(tgnn.MessagePassing):
         self.beta = nn.Parameter(torch.rand(1, 1))
         nn.init.xavier_uniform_(self.beta.data, gain=1.414)
         
-        self.gamma = None
-        
     def forward(self, x, edge_attr, edge_idx):
         edge_idx, edge_attr = tg.utils.add_self_loops(edge_idx, edge_attr)
         return self.propagate(edge_idx, x=x, edge_attr=edge_attr)
@@ -101,8 +99,9 @@ class GATv3Layer(tgnn.MessagePassing):
         node_attr = self.alpha * self.original_mlp(cat)
         edge_attr = self.beta * self.eigen_mlp(edge_attr)
         
-        self.gamma = torch.softmax(F.leaky_relu(node_attr + edge_attr), 1)
-        msg = self.gamma * self.out(x_j)
+        temp = F.leaky_relu(node_attr + edge_attr)
+        gamma = torch.exp(temp) / torch.sum(torch.exp(temp))
+        msg = gamma * self.out(x_j)
         
         return msg
 
