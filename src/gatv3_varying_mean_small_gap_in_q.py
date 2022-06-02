@@ -1,3 +1,4 @@
+print ("Importing ...")
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -144,6 +145,7 @@ def get_intra_inter_avg_gamma(gamma_matrix):
                 
     return np.array(intra_edge_gammas), np.array(inter_edge_gammas)
 
+print ("Building graph ...")
 n = 400
 d = int(np.ceil(n/(np.log(n)**2)))
 p = 0.5
@@ -169,7 +171,9 @@ std_intra_edge_gamma_2 = []
 std_inter_edge_gamma_2 = []    
 all_train_losses = []
 
+print ("Starting training ...")
 for mu in mus:
+    print ("Building SBM ...")
     g = nx.stochastic_block_model(sizes, probs)
     adjlist = [[v for v in g.neighbors(i)] for i in range(n)]
 
@@ -202,6 +206,7 @@ for mu in mus:
     eigenK = 10 # take top 10 eigen vector features
     EPOCHS = 1000
 
+    print ("Instantiating model ...")
     gat = GATv3(
         indim=1, 
         eigendim=eigenK*2,
@@ -240,6 +245,7 @@ for mu in mus:
     
     torch.cuda.empty_cache()
 
+    print ("Analysing gamma values ...")
     gamma_matrix1 = get_gammas(Xw_tensor.cpu(), ground_truth_tensor.cpu(), gat.gat1.cpu(), edge_idx.cpu())
     gamma_matrix2 = get_gammas(Xw_tensor.cpu(), ground_truth_tensor.cpu(), gat.gat2.cpu(), edge_idx.cpu())
 
