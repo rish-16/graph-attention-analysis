@@ -12,7 +12,6 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Optional, Tuple, Union
-import math, wandb
 
 class Eigen(nn.Module):
     def __init__(self, k):
@@ -200,7 +199,6 @@ for mu in mus:
     w = (R/np.linalg.norm(mu_))*mu_
     Xw = X@w
 
-#     wandb.init(project="GATv3", entity="rish-16")
 
     HIDDEN = 16
     eigenK = 10 # take top 10 eigen vector features
@@ -241,7 +239,6 @@ for mu in mus:
     print ("------------------------------------------\n\n")
     all_train_losses.append(np.array(train_losses))
     
-#     wandb.finish()
     
     torch.cuda.empty_cache()
 
